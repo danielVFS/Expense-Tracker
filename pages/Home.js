@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 
 import { COLORS, FONTS, SIZES, icons } from "../constants";
+
+import categoriesData from "../data/categories";
 
 const Home = () => {
   function renderNavBar() {
@@ -79,14 +81,15 @@ const Home = () => {
             />
           </View>
           <View style={{ marginLeft: SIZES.padding }}>
-            <Text style={{ color: COLORS.primary, ...FONTS.h3 }}>
+            <Text
+              style={{ color: COLORS.primary, ...FONTS.h3, fontWeight: "500" }}
+            >
               11 Nov, 2020
             </Text>
             <Text
               style={{
                 color: COLORS.darkgray,
                 ...FONTS.body3,
-                fontWeight: "500",
               }}
             >
               18% than last month
@@ -97,11 +100,83 @@ const Home = () => {
     );
   }
 
+  function renderCategoryHeaderSection() {
+    const [categories, setCategories] = useState(categoriesData);
+    const [viewMode, setViewMode] = useState("chart");
+
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          padding: SIZES.padding,
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <View>
+          <Text style={{ color: COLORS.primary, ...FONTS.h3 }}>Categogies</Text>
+          <Text style={{ color: COLORS.darkgray, ...FONTS.body4 }}>
+            {categories.length} Total
+          </Text>
+        </View>
+
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: viewMode === "chart" ? COLORS.secondary : null,
+              height: 50,
+              width: 50,
+              borderRadius: 25,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => setViewMode("chart")}
+          >
+            <Image
+              source={icons.chart}
+              resizeMode="contain"
+              style={{
+                width: 20,
+                height: 20,
+                tintColor:
+                  viewMode === "chart" ? COLORS.white : COLORS.darkgray,
+              }}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: viewMode === "list" ? COLORS.secondary : null,
+              height: 50,
+              width: 50,
+              borderRadius: 25,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => setViewMode("list")}
+          >
+            <Image
+              source={icons.menu}
+              resizeMode="contain"
+              style={{
+                width: 20,
+                height: 20,
+                tintColor: viewMode === "list" ? COLORS.white : COLORS.darkgray,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.lightGray2 }}>
       {renderNavBar()}
 
       {renderHeader()}
+
+      {renderCategoryHeaderSection()}
     </View>
   );
 };
