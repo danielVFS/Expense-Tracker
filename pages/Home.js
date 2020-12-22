@@ -1,11 +1,23 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  SafeAreaView,
+  FlatList,
+  StyleSheet,
+} from "react-native";
 
 import { COLORS, FONTS, SIZES, icons } from "../constants";
 
 import categoriesData from "../data/categories";
 
 const Home = () => {
+  const [categories, setCategories] = useState(categoriesData);
+  const [viewMode, setViewMode] = useState("chart");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
   function renderNavBar() {
     return (
       <View
@@ -101,9 +113,6 @@ const Home = () => {
   }
 
   function renderCategoryHeaderSection() {
-    const [categories, setCategories] = useState(categoriesData);
-    const [viewMode, setViewMode] = useState("chart");
-
     return (
       <View
         style={{
@@ -170,6 +179,53 @@ const Home = () => {
     );
   }
 
+  function renderCategoryList() {
+    const renderItem = ({ item }) => {
+      return (
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            margin: 5,
+            paddingVertical: SIZES.radius,
+            paddingHorizontal: SIZES.padding,
+            borderRadius: 5,
+            backgroundColor: COLORS.white,
+            ...styles.shadow,
+          }}
+          onPress={() => setSelectedCategory(item)}
+        >
+          <Image
+            source={item.icon}
+            style={{ width: 20, height: 20, tintColor: item.color }}
+          />
+          <Text
+            style={{
+              marginLeft: SIZES.base,
+              color: COLORS.primary,
+              ...FONTS.h4,
+            }}
+          >
+            {item.name}
+          </Text>
+        </TouchableOpacity>
+      );
+    };
+
+    return (
+      <View style={{ paddingHorizontal: SIZES.padding - 5 }}>
+        <View>
+          <FlatList
+            data={categories}
+            numColumns={2}
+            renderItem={renderItem}
+            keyExtractor={(item) => `${item.id}`}
+          />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.lightGray2 }}>
       {renderNavBar()}
@@ -177,8 +233,25 @@ const Home = () => {
       {renderHeader()}
 
       {renderCategoryHeaderSection()}
+
+      <SafeAreaView style={{ paddingBottom: 60 }}>
+        {viewMode === "list" && <View>{renderCategoryList()}</View>}
+      </SafeAreaView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.85,
+    elevation: 3,
+  },
+});
 
 export default Home;
