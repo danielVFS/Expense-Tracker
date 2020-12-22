@@ -86,7 +86,7 @@ export default [
       {
         id: 8,
         title: "Baby Car Seat",
-        description: "Baby Car Seat",
+        description: "Good quality baby seat",
         location: "ByProgrammers' Baby Care Store",
         total: 100.0,
         status: pendingStatus,
@@ -94,7 +94,7 @@ export default [
       {
         id: 9,
         title: "Pampers",
-        description: "Pampers",
+        description: "Diapers Pampers",
         location: "ByProgrammers' Supermarket",
         total: 100.0,
         status: pendingStatus,
