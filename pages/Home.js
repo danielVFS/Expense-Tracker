@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   FlatList,
   StyleSheet,
+  Animated,
 } from "react-native";
 
 import { COLORS, FONTS, SIZES, icons } from "../constants";
@@ -17,6 +18,10 @@ const Home = () => {
   const [categories, setCategories] = useState(categoriesData);
   const [viewMode, setViewMode] = useState("chart");
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showMoreToggle, setShowMoreToggle] = useState(false);
+
+  const categoryListHeightAnimationValue = useRef(new Animated.Value(115))
+    .current;
 
   function renderNavBar() {
     return (
@@ -214,14 +219,52 @@ const Home = () => {
 
     return (
       <View style={{ paddingHorizontal: SIZES.padding - 5 }}>
-        <View>
+        <Animated.View style={{ height: categoryListHeightAnimationValue }}>
           <FlatList
             data={categories}
             numColumns={2}
             renderItem={renderItem}
             keyExtractor={(item) => `${item.id}`}
           />
-        </View>
+        </Animated.View>
+
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            marginVertical: SIZES.base,
+            justifyContent: "center",
+          }}
+          onPress={() => {
+            if (showMoreToggle) {
+              Animated.timing(categoryListHeightAnimationValue, {
+                toValue: 115,
+                duration: 300,
+                useNativeDriver: false,
+              }).start();
+            } else {
+              Animated.timing(categoryListHeightAnimationValue, {
+                toValue: 172.5,
+                duration: 300,
+                useNativeDriver: false,
+              }).start();
+            }
+
+            setShowMoreToggle(!showMoreToggle);
+          }}
+        >
+          <Text style={{ ...FONTS.body4 }}>
+            {showMoreToggle ? "LESS" : "MORE"}
+          </Text>
+          <Image
+            source={showMoreToggle ? icons.up_arrow : icons.down_arrow}
+            style={{
+              marginLeft: 5,
+              width: 15,
+              height: 15,
+              alignSelf: "center",
+            }}
+          />
+        </TouchableOpacity>
       </View>
     );
   }
