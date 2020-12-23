@@ -455,6 +455,83 @@ const Home = () => {
     return finalChartData;
   }
 
+  function setSelectCategoryByName(name) {
+    let category = categories.filter((a) => a.name == name);
+    setSelectedCategory(category[0]);
+  }
+
+  function renderExpensesSummary() {
+    let data = processCategoryDataToDisplay();
+
+    const renderItem = ({ item }) => {
+      return (
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            height: 40,
+            paddingHorizontal: SIZES.radius,
+            borderRadius: 10,
+            backgroundColor:
+              selectedCategory && selectedCategory.name == item.name
+                ? item.color
+                : COLORS.white,
+          }}
+          onPress={() => setSelectCategoryByName(item.name)}
+        >
+          <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor:
+                  selectedCategory && selectedCategory.name == item.name
+                    ? COLORS.white
+                    : item.color,
+                borderRadius: 5,
+              }}
+            ></View>
+            <Text
+              style={{
+                color:
+                  selectedCategory && selectedCategory.name == item.name
+                    ? COLORS.white
+                    : COLORS.primary,
+                marginLeft: SIZES.base,
+                ...FONTS.h3,
+              }}
+            >
+              {item.name}
+            </Text>
+          </View>
+
+          <View style={{ justifyContent: "center" }}>
+            <Text
+              style={{
+                color:
+                  selectedCategory && selectedCategory.name == item.name
+                    ? COLORS.white
+                    : COLORS.primary,
+                ...FONTS.h3,
+              }}
+            >
+              {item.y} USD - {item.label}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    };
+
+    return (
+      <View style={{ padding: SIZES.padding }}>
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => `${item.id}`}
+        />
+      </View>
+    );
+  }
+
   function renderChart() {
     let chartData = processCategoryDataToDisplay();
     let colorScales = chartData.map((item) => item.color);
@@ -469,7 +546,11 @@ const Home = () => {
           data={chartData}
           colorScale={colorScales}
           labels={({ datum }) => `${datum.y}`}
-          radius={SIZES.width * 0.4 - 10}
+          radius={({ datum }) =>
+            selectedCategory && selectedCategory.name == datum.name
+              ? SIZES.width * 0.4
+              : SIZES.width * 0.4 - 10
+          }
           innerRadius={70}
           labelRadius={({ innerRadius }) =>
             (SIZES.width * 0.4 + innerRadius) / 2.5
@@ -482,6 +563,24 @@ const Home = () => {
           }}
           width={SIZES.width * 0.8}
           height={SIZES.width * 0.8}
+          events={[
+            {
+              target: "data",
+              eventHandlers: {
+                onPress: () => {
+                  return [
+                    {
+                      target: "labels",
+                      mutation: (props) => {
+                        let categoryName = chartData[props.index].name;
+                        setSelectCategoryByName(categoryName);
+                      },
+                    },
+                  ];
+                },
+              },
+            },
+          ]}
         />
 
         <View style={{ position: "absolute" }}>
@@ -512,7 +611,12 @@ const Home = () => {
             {renderIncomingExpenses()}
           </View>
         )}
-        {viewMode === "chart" && <View>{renderChart()}</View>}
+        {viewMode === "chart" && (
+          <View>
+            {renderChart()}
+            {renderExpensesSummary()}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
